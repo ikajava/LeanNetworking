@@ -72,16 +72,18 @@ extension Endpoint {
     }
     
     func call(completion: @escaping (Result<Response, Error>) -> Void) {
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {
-                completion(.failure(error!))
-                return
-            }
-            do {
-                completion(.success(try self.decoder.decode(Response.self, from: data!)))
-            } catch let error {
-                completion(.failure(error))
-            }
+        let task = URLSession
+            .shared
+            .dataTask(with: request) { data, response, error in
+                guard error == nil else {
+                    completion(.failure(error!))
+                    return
+                }
+                do {
+                    completion(.success(try self.decoder.decode(Response.self, from: data!)))
+                } catch let error {
+                    completion(.failure(error))
+                }
         }
         task.resume()
     }
