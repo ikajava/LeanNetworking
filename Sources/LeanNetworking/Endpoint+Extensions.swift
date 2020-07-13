@@ -20,7 +20,8 @@ func authoriseUser() -> AnyPublisher<Bool, Never> {
 
 extension Endpoint {
     func asPublisher() -> AnyPublisher<Response, Error> {
-        URLSession.shared
+        URLSession
+            .shared
             .dataTaskPublisher(for: request)
             .tryMap { result in
                 guard let response = result.response as? HTTPURLResponse,
@@ -50,8 +51,8 @@ extension Endpoint {
             }
             .switchToLatest()
             .eraseToAnyPublisher()
-        })
-            .eraseToAnyPublisher()
+            }
+        ).eraseToAnyPublisher()
     }
     
     func asFuture() -> Future<Response, Error> {
