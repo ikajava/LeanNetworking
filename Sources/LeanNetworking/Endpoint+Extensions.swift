@@ -18,7 +18,7 @@ func authoriseUser() -> AnyPublisher<Bool, Never> {
 }
 
 
-extension Endpoint {
+public extension Endpoint {
     func asPublisher() -> AnyPublisher<Response, Error> {
         URLSession
             .shared

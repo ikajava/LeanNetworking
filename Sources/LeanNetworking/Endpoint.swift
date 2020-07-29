@@ -23,49 +23,49 @@ public final class Endpoint<Response: Decodable> {
     private(set) var decoder = JSONDecoder()
     private(set) var request: URLRequest!
     
-    init(baseURL: String) {
+    public init(baseURL: String) {
         self.baseURL = baseURL
         url = URL(string: baseURL)!
     }
     
     @discardableResult
-    func appendingPathParameter(_ value: String) -> Endpoint {
+    public func appendingPathParameter(_ value: String) -> Endpoint {
         url.appendPathComponent(value)
         return self
     }
     
     @discardableResult
-    func appendingQueryItem(key: String, value: String) -> Endpoint {
+    public func appendingQueryItem(key: String, value: String) -> Endpoint {
         queryItems.append(Pair(key: key, value: value))
         return self
     }
     
     @discardableResult
-    func appendingHeader(key: String, value: String) -> Endpoint {
+    public func appendingHeader(key: String, value: String) -> Endpoint {
         headers.append(Pair(key: key, value: value))
         return self
     }
     
     @discardableResult
-    func usingMethod(_ method: RequestMethod) -> Endpoint {
+    public func usingMethod(_ method: RequestMethod) -> Endpoint {
         self.method = method
         return self
     }
     
     @discardableResult
-    func usingUserAgent(_ userAgent: String) -> Endpoint {
+    public func usingUserAgent(_ userAgent: String) -> Endpoint {
         self.headers.append(Pair(key: "User-Agent", value: userAgent))
         return self
     }
     
     @discardableResult
-    func usingContentType(_ mimeType: String) -> Endpoint {
+    public func usingContentType(_ mimeType: String) -> Endpoint {
         self.headers.append(Pair(key: "Content-Type", value: mimeType))
         return self
     }
     
     @discardableResult
-    func signed(_ bearer: String) -> Endpoint {
+    public func signed(_ bearer: String) -> Endpoint {
         headers.append(Pair(key: "Authorization", value: bearer))
         return self
     }
@@ -77,13 +77,13 @@ public final class Endpoint<Response: Decodable> {
     }
     
     @discardableResult
-    func usingDateDecodingStrategy(_ formatter: DateFormatter) -> Endpoint {
+    public func usingDateDecodingStrategy(_ formatter: DateFormatter) -> Endpoint {
         decoder.dateDecodingStrategy = .formatted(formatter)
         return self
     }
     
     @discardableResult
-    func build() throws -> Endpoint {
+    public func build() throws -> Endpoint {
         // Query items
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         if !queryItems.isEmpty {
