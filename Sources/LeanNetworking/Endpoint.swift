@@ -71,7 +71,7 @@ public final class Endpoint<Response: Decodable> {
     }
     
     @discardableResult
-    func bySettingBody<T: Encodable>(_ body: T) -> Endpoint {
+    public func bySettingBody<T: Encodable>(_ body: T) -> Endpoint {
         httpBody = try? encoder.encode(body)
         return self
     }
