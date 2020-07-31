@@ -30,6 +30,11 @@ public extension Endpoint {
                         throw try self.decoder.decode(APIError.self, from: result.data)
                 }
                 
+                Logger.log(loggingOptions: self.loggingOptions,
+                           level: .info,
+                           response: result.response,
+                           data: result.data)
+                
                 return try self.decoder.decode(Response.self, from: result.data)
         }
         .tryCatch({ error -> AnyPublisher<Response, Error> in
@@ -37,14 +42,17 @@ public extension Endpoint {
                 let apiError = error as? APIError,
                 apiError.statusCode == 401
                 else {
+                    Logger.trace(level: .error, params: [String(describing: error)])
                     throw error
             }
             return authoriseUser()
                 .tryMap { [weak self] success -> AnyPublisher<Response, Error> in
                     guard let self = self else {
+                        Logger.trace(level: .error, params: [String(describing: error)])
                         throw error
                     }
                     guard success else {
+                        Logger.trace(level: .error, params: [String(describing: error)])
                         throw error
                     }
                     return self.asPublisher()
@@ -56,16 +64,21 @@ public extension Endpoint {
     }
     
     func asFuture() -> Future<Response, Error> {
-        Future<Response, Error> { promise in
+        Logger.log(loggingOptions: loggingOptions, level: .info, request: request)
+        
+        return Future<Response, Error> { promise in
             let task = URLSession.shared.dataTask(with: self.request) { data, response, error in
                 guard error == nil else {
                     promise(.failure(error!))
+                    Logger.trace(level: .error, params: [String(describing: error)])
                     return
                 }
                 do {
+                    Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!)
                     promise(.success(try self.decoder.decode(Response.self, from: data!)))
                 } catch let error {
                     promise(.failure(error))
+                    Logger.traceDecodingError(error: error)
                 }
             }
             task.resume()
