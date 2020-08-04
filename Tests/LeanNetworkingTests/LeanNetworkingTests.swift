@@ -12,7 +12,7 @@ final class LeanNetworkingTests: XCTestCase {
                 .appendingPathParameter("10")
                 .usingUserAgent("firefox")
                 .usingContentType("application/json")
-                .usingDateDecodingStrategy(.fullDateFormatter)
+                .usingDateDecodingStrategy(.iso3339Formatter)
                 .usingMethod(.GET)
                 .appendingQueryItem(key: "limit", value: "10")
                 .build()
@@ -39,7 +39,7 @@ final class LeanNetworkingTests: XCTestCase {
                 .usingUserAgent("firefox")
                 .usingContentType("application/json")
                 .bySettingBody(Send(name: "Morpheus"))
-                .usingDateDecodingStrategy(.fullDateFormatter)
+                .usingDateDecodingStrategy(.iso3339Formatter)
                 .usingMethod(.POST)
                 .build()
         
