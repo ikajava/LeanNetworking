@@ -27,15 +27,15 @@ public extension Endpoint {
                 guard let response = result.response as? HTTPURLResponse,
                     (200...299).contains(response.statusCode)
                     else {
-                        throw try self.decoder.decode(APIError.self, from: result.data)
+                        throw try self.decoder.decode(APIError.self, from: result.data.valid)
                 }
                 
                 Logger.log(loggingOptions: self.loggingOptions,
                            level: .info,
                            response: result.response,
-                           data: result.data)
+                           data: result.data.valid)
                 
-                return try self.decoder.decode(Response.self, from: result.data)
+                return try self.decoder.decode(Response.self, from: result.data.valid)
         }
         .tryCatch({ error -> AnyPublisher<Response, Error> in
             guard
@@ -68,14 +68,16 @@ public extension Endpoint {
         
         return Future<Response, Error> { promise in
             let task = URLSession.shared.dataTask(with: self.request) { data, response, error in
+                
                 guard error == nil else {
                     promise(.failure(error!))
                     Logger.trace(level: .error, params: [String(describing: error)])
                     return
                 }
                 do {
-                    Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!)
-                    promise(.success(try self.decoder.decode(Response.self, from: data!)))
+                    
+                    Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!.valid)
+                    promise(.success(try self.decoder.decode(Response.self, from: data!.valid)))
                 } catch let error {
                     promise(.failure(error))
                     Logger.traceDecodingError(error: error)
@@ -94,12 +96,20 @@ public extension Endpoint {
                     return
                 }
                 do {
-                    completion(.success(try self.decoder.decode(Response.self, from: data!)))
+                    completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
                 } catch let error {
                     completion(.failure(error))
                 }
         }
         task.resume()
     }
-    
+}
+
+private extension Data {
+    var valid: Data {
+        if isEmpty {
+            return "{}".data(using: .utf8)!
+        }
+        return self
+    }
 }
