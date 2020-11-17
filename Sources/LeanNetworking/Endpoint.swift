@@ -20,8 +20,8 @@ public final class Endpoint<Response: Decodable> {
     private var httpBody: Data? = nil
     
     private(set) var loggingOptions: LoggingOptions = .none
-    private(set) var encoder = JSONEncoder()
-    private(set) var decoder = JSONDecoder()
+    public private(set) var encoder = JSONEncoder()
+    public private(set) var decoder = JSONDecoder()
     private(set) var request: URLRequest!
     
     public init(baseURL: String) {
