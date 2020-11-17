@@ -44,8 +44,10 @@ public final class Endpoint<Response: Decodable> {
     ///   - value: query parameter value
     /// - Returns: Endpoint
     @discardableResult
-    public func appendingQueryItem(key: String, value: String) -> Endpoint {
-        queryItems.append(Pair(key: key, value: value))
+    public func appendingQueryItem(key: String, value: String?) -> Endpoint {
+        if let value = value {
+            queryItems.append(Pair(key: key, value: value))
+        }
         return self
     }
     
