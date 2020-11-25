@@ -115,7 +115,7 @@ public class Logger {
         for param in params {
             print("\(String(describing: param))")
         }
-        print("⏰ - \(Date().timeIntervalSince1970)")
+        print("⏰ - \(Date())")
         print("\n")
         
         #endif
