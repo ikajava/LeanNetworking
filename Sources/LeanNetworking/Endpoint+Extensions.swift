@@ -73,7 +73,6 @@ public extension Endpoint {
                     return
                 }
                 do {
-                    
                     Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!.valid)
                     promise(.success(try self.decoder.decode(Response.self, from: data!.valid)))
                 } catch let error {

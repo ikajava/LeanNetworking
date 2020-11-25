@@ -89,6 +89,9 @@ public class Logger {
             params.append("Response     -> \(json ?? [:])")
         }
         
+        if case .none = loggingOptions {
+            return
+        }
         Logger.trace(level: .info, params: params)
     }
     
