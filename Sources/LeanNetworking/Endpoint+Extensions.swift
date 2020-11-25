@@ -64,8 +64,6 @@ public extension Endpoint {
     }
     
     func asFuture() -> Future<Response, Error> {
-        Logger.log(loggingOptions: loggingOptions, level: .info, request: request)
-        
         return Future<Response, Error> { promise in
             let task = URLSession.shared.dataTask(with: self.request) { data, response, error in
                 
