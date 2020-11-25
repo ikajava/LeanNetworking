@@ -68,6 +68,10 @@ public class Logger {
             )
         }
         
+        if case .none = loggingOptions {
+            return
+        }
+        
         trace(level: level, params: params)
     }
     
