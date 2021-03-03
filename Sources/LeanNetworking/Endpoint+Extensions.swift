@@ -10,7 +10,7 @@ public extension Endpoint {
         return Future<Response, NetworkingError> { promise in
             let task = URLSession(
                 configuration: .ephemeral,
-                delegate: SessionDelegate(),
+                delegate: Pin(),
                 delegateQueue: nil
             ).dataTask(with: self.request) { data, response, error in
                 
@@ -48,7 +48,7 @@ public extension Endpoint {
     func call(completion: @escaping (Result<Response, NetworkingError>) -> Void) {
         let task = URLSession(
             configuration: .ephemeral,
-            delegate: SessionDelegate(),
+            delegate: Pin(),
             delegateQueue: nil
         ).dataTask(with: request) { data, response, error in
             
