@@ -47,7 +47,7 @@ class Pin : NSObject, URLSessionDelegate {
                 var keyWithHeader = Data(rsa2048Asn1Header)
                 keyWithHeader.append(pubKeyData as Data)
                 let sha256Key = sha256(keyWithHeader)
-                isServerTrusted = pubKey as! String == sha256Key
+                isServerTrusted = self.pubKey == sha256Key
             } else {
                 isServerTrusted = false
             }
