@@ -8,7 +8,7 @@ class Pin: NSObject, URLSessionDelegate {
         0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00
     ]
     
-    private let pubKey = "55hptqELqWH4rZSXERypbdAv8JGFXoPAfSF+mGvazHg="
+    private let pubKey = "KEMk92zeeRAUvSFH9wiY3T9oaTGOjfsXG1z/z+vooBo="
     
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
