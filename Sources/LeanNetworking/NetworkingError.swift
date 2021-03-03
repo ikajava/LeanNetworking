@@ -1,6 +1,4 @@
-
 import Foundation
-
 
 public enum NetworkingError: Error, Codable {
     case status(String)

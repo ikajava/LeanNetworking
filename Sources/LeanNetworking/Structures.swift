@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Oleksandr Glagoliev on 13.07.2020.
-//
-
 import Foundation
 
 // MARK: - Key-Value -

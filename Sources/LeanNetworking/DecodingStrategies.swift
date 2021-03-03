@@ -1,12 +1,4 @@
-//
-//  File.swift
-//  
-//
-//  Created by Oleksandr Glagoliev on 13.07.2020.
-//
-
 import Foundation
-
 
 public extension DateFormatter {
     static var iso3339Formatter: DateFormatter {
