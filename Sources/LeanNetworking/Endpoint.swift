@@ -23,6 +23,7 @@ public final class Endpoint<Response: Decodable> {
     public private(set) var encoder = JSONEncoder()
     public private(set) var decoder = JSONDecoder()
     private(set) var request: URLRequest!
+    private(set) weak var delegate: URLSessionDelegate?
     
     public init(baseURL: String) {
         self.baseURL = baseURL
@@ -122,6 +123,12 @@ public final class Endpoint<Response: Decodable> {
     @discardableResult
     public func print(_ loggingOptions: LoggingOptions = .all) -> Endpoint {
         self.loggingOptions = loggingOptions
+        return self
+    }
+    
+    @discardableResult
+    public func pinned(_ sessionDelegate: URLSessionDelegate) -> Endpoint {
+        self.delegate = sessionDelegate
         return self
     }
     

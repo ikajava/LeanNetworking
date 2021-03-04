@@ -7,8 +7,13 @@ public extension Endpoint {
     func asFuture() -> Future<Response, NetworkingError> {
         Logger.log(loggingOptions: loggingOptions, level: .info, request: request)
         
-        return Future<Response, NetworkingError> { promise in
-            let task = URLSession.shared.dataTask(with: self.request) { data, response, error in
+        return Future<Response, NetworkingError> { [weak self] promise in
+            guard let self = self else { return }
+            let task = URLSession(
+                configuration: .ephemeral,
+                delegate: self.delegate,
+                delegateQueue: nil
+            ).dataTask(with: self.request) { data, response, error in
                 
                 guard error == nil else {
                     promise(.failure( NetworkingError.regular(error!) ))
@@ -42,18 +47,20 @@ public extension Endpoint {
     }
     
     func call(completion: @escaping (Result<Response, NetworkingError>) -> Void) {
-        let task = URLSession
-            .shared
-            .dataTask(with: request) { data, response, error in
-                guard error == nil else {
-                    completion(.failure(  NetworkingError.regular(error!) ))
-                    return
-                }
-                do {
-                    completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
-                } catch let error {
-                    completion(.failure( NetworkingError.regular(error) ))
-                }
+        let task = URLSession(
+            configuration: .ephemeral,
+            delegate: self.delegate,
+            delegateQueue: nil
+        ).dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                completion(.failure(  NetworkingError.regular(error!) ))
+                return
+            }
+            do {
+                completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
+            } catch let error {
+                completion(.failure( NetworkingError.regular(error) ))
+            }
         }
         task.resume()
     }
