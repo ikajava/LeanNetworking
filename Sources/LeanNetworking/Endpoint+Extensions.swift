@@ -8,11 +8,7 @@ public extension Endpoint {
         Logger.log(loggingOptions: loggingOptions, level: .info, request: request)
         
         return Future<Response, NetworkingError> { promise in
-            let task = URLSession(
-                configuration: .ephemeral,
-                delegate: Pin(),
-                delegateQueue: nil
-            ).dataTask(with: self.request) { data, response, error in
+            let task = URLSession.shared.dataTask(with: self.request) { data, response, error in
                 
                 guard error == nil else {
                     promise(.failure( NetworkingError.regular(error!) ))
@@ -46,12 +42,9 @@ public extension Endpoint {
     }
     
     func call(completion: @escaping (Result<Response, NetworkingError>) -> Void) {
-        let task = URLSession(
-            configuration: .ephemeral,
-            delegate: Pin(),
-            delegateQueue: nil
-        ).dataTask(with: request) { data, response, error in
-            
+        let task = URLSession
+            .shared
+            .dataTask(with: request) { data, response, error in
                 guard error == nil else {
                     completion(.failure(  NetworkingError.regular(error!) ))
                     return
