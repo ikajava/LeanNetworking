@@ -126,6 +126,9 @@ public final class Endpoint<Response: Decodable> {
         return self
     }
     
+    /// Sets appropriate delegate that will handle SSL pinning
+    /// - Parameter sessionDelegate: URLSessionDelegate responsible for SSL pinning
+    /// - Returns: Endpoint
     @discardableResult
     public func pinned(_ sessionDelegate: URLSessionDelegate) -> Endpoint {
         self.delegate = sessionDelegate
