@@ -18,15 +18,9 @@ Import where appropriate:
 ```
 import LeanNetworking
 ```
+In order to use LeanNetworking developer should use it like below example:
 
-
-//            .asPublisher()
-//            .sink(receiveCompletion: { completion in
-//                print(completion)
-//            }, receiveValue: { val in
-//                print(val)
-//            }).store(in: &cancellables)
-                
+```                
             .asFuture()
             .sink(receiveCompletion: { completion in
                 print(completion)
@@ -34,3 +28,22 @@ import LeanNetworking
                 print(val)
             }).store(in: &cancellables)
     }
+```
+
+### .asFuture() :
+
+where the Future is defined as Future<Output, Failure> where the Output is of generic type and Failure is Error type.
+
+### .sink : 
+
+consists of three parts:
+
+parameter receiveComplete: The closure to execute on completion.
+
+parameter receiveValue: The closure to execute on receipt of a value.
+
+Returns: A cancellable instance, which you use when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
+
+### .store :
+
+Stores type-erasing cancellable instance in the specified set.
