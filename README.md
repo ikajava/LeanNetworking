@@ -48,10 +48,9 @@ Returns: A cancellable instance, which you use when you end assignment of the re
 
 Stores type-erasing cancellable instance in the specified set.
 
-
 ```
-    func storageStatistics(completion: @escaping (Result<StorageStatistics, NetworkingError>) -> Void) {
-        Endpoint<StorageStatisticsDTO>(baseURL: ApplicationConfig.webserviceURL)
+    func example(completion: @escaping (Result<ExampleStruct, Error>) -> Void) {
+        Endpoint<ResultExampleStruct>(baseURL: ApplicationConfig.webserviceURL)
             .get("storage/statistics", parameters: [], token: API.shared.authorisationBearer)
             .asFuture()
             .sink { result in
@@ -59,7 +58,7 @@ Stores type-erasing cancellable instance in the specified set.
                     completion(.failure(networkingError))
                 }
             } receiveValue: { response in
-                completion(.success(response.toStorageStatistics()))
+                completion(.success(response))
             }
             .store(in: &cancellables)
     }
