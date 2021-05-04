@@ -1,10 +1,3 @@
-//
-//  Logger.swift
-//  
-//
-//  Created by Shalva Avanashvili on 31.07.2020.
-//
-
 import Foundation
 
 public enum NetworkLogLevel: Int {

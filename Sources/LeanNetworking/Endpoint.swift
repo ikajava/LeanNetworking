@@ -1,11 +1,3 @@
-//
-//  Endpoint.swift
-//  LeanNetworking
-//
-//  Created by Oleksandr Glagoliev on 10.07.2020.
-//  Copyright © 2020 Oleksandr Glagoliev. All rights reserved.
-//
-
 import Foundation
 
 //MARK: - CLIENT -

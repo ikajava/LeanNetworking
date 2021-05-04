@@ -22,7 +22,7 @@ extension NetworkingError {
             return
         }
         
-        throw NetworkingErrorCodingError.decoding("Whoops! \(dump(values))")
+        throw NetworkingErrorCodingError.decoding("Decoding Error!: \(dump(values))")
     }
 
     public func encode(to encoder: Encoder) throws {

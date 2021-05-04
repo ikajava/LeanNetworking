@@ -1,19 +1,16 @@
 # LeanNetworking
 
-A description of this package.
+## The goal
 
+LeanNetworking (LN) is a thin wrapper on URLSession APIs that is built to provide ergonomic Networking functionality for iOS Applications.
 
-//            .asPublisher()
-//            .sink(receiveCompletion: { completion in
-//                print(completion)
-//            }, receiveValue: { val in
-//                print(val)
-//            }).store(in: &cancellables)
-                
-            .asFuture()
-            .sink(receiveCompletion: { completion in
-                print(completion)
-            }, receiveValue: { val in
-                print(val)
-            }).store(in: &cancellables)
-    }
+## Features
+- Ergonomic
+- `Combine` compatible
+- Declarative syntax
+- Light and fast
+- Decoding/Encoding with `Codable` 
+- Multilevel logging
+
+## Usage
+
