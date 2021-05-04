@@ -12,7 +12,7 @@ Add LeanNetworking package:
 ```
 dependencies: [
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.0.0")
-]
+    ]
 ```
 Import where appropriate:
 ```
