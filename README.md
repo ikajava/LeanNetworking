@@ -25,7 +25,7 @@ In order to use LeanNetworking developer should do according to these steps:
 First create a function with return type of result model and error
 ```
     func example(completion: @escaping (Result<ExampleStruct, Error>) -> Void) {
-    ...
+        ...
     }
 ```  
 Second creating an instance of Endpoint by determining Result model and also Webservice Url
@@ -50,7 +50,7 @@ Then we add .asFuture() in order to being notified when the publisher emits an e
         ...
             .get("exampleURL", parameters: [], token: bearerToken)
             .asFuture()
-        ...
+            ...
     }
 ```
 In order to creates the subscriber and immediately requests an unlimited number of values we use ".sink" Sink has two parameter and one return type.
@@ -66,7 +66,7 @@ Second parameter is "receiveValue" which is a closure that will be executed on r
             } receiveValue: { response in
                 completion(.success(response))
             }
-        ...
+            ...
     }
 ```
 
