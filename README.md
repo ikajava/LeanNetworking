@@ -28,7 +28,7 @@ First create a function with return type of result model and error
     ...
     }
 ```  
-Second creating an Endpoint by determining Result model and also Webservice Url
+Second creating an instance of Endpoint by determining Result model and also Webservice Url
 
 ```
     func example(completion: @escaping (Result<ExampleStruct, Error>) -> Void) {
@@ -36,7 +36,7 @@ Second creating an Endpoint by determining Result model and also Webservice Url
         ...
     }
 ```
-Third defining type of request method
+Third defining type of request method. For example here we used ".get".Then developer can assign parameters in form of aray and also bearertoken.
 ```
     func example(completion: @escaping (Result<ExampleStruct, Error>) -> Void) {
         Endpoint<ExampleStructDTO>(baseURL: webserviceURL)
