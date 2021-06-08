@@ -100,6 +100,15 @@ public final class Endpoint<Response: Decodable> {
         return self
     }
     
+    /// Appends data to the body e.g image data
+    /// - Parameter data: Data
+    /// - Returns: Endpoint
+    @discardableResult
+    public func bySettingData(_ data: Data) -> Endpoint {
+        httpBody = data
+        return self
+    }
+    
     /// Sets custom date formatter strategy
     /// - Parameter formatter: date formmatter, how the date should be exctracted form the response
     /// - Returns: Endpoint
