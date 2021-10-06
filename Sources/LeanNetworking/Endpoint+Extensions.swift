@@ -13,9 +13,15 @@ public extension Endpoint {
                 delegate: self.delegate,
                 delegateQueue: nil
             ).dataTask(with: self.request) { data, response, error in
+                let statusCode = (response as? HTTPURLResponse)?.statusCode
+                
+                guard statusCode == 200 else {
+                    promise(.failure(.regular(nil)))
+                    return
+                }
                 
                 guard error == nil else {
-                    promise(.failure( NetworkingError.regular(error!) ))
+                    promise(.failure( NetworkingError.regular(error) ))
                     Logger.trace(level: .error, params: [String(describing: error)])
                     return
                 }
