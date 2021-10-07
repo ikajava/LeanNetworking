@@ -2,7 +2,7 @@ import Foundation
 
 public enum NetworkingError: Error, Codable {
     case status(String)
-    case regular(Error?)
+    case regular(Error?, StatusCode?)
 }
 
 extension NetworkingError {

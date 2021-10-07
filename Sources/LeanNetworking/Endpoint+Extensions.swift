@@ -13,15 +13,27 @@ public extension Endpoint {
                 delegate: self.delegate,
                 delegateQueue: nil
             ).dataTask(with: self.request) { data, response, error in
-                let statusCode = (response as? HTTPURLResponse)?.statusCode
+                guard let status = (response as? HTTPURLResponse)?.statusCode,
+                      let statusCode = StatusCode(rawValue: status) else
+                {
+                    promise(.failure(.regular(nil, nil)))
+                    Logger.trace(level: .error, params: ["No status code"])
+                    return
+                }
                 
-                guard statusCode == 200 else {
-                    promise(.failure(.regular(nil)))
+                
+                guard statusCode == .OK else {
+                    promise(
+                        .failure(
+                            .regular(nil, statusCode)
+                        )
+                    )
+                    Logger.trace(level: .error, params: ["Status code: \(statusCode.rawValue)"])
                     return
                 }
                 
                 guard error == nil else {
-                    promise(.failure( NetworkingError.regular(error) ))
+                    promise(.failure( NetworkingError.regular(error, statusCode) ))
                     Logger.trace(level: .error, params: [String(describing: error)])
                     return
                 }
@@ -43,7 +55,7 @@ public extension Endpoint {
                         // DO NOTHING
                     }
                     
-                    promise(.failure( NetworkingError.regular(error) ))
+                    promise(.failure( NetworkingError.regular(error, statusCode) ))
                     Logger.traceDecodingError(error: error)
                 }
             }
@@ -57,14 +69,21 @@ public extension Endpoint {
             delegate: self.delegate,
             delegateQueue: nil
         ).dataTask(with: request) { data, response, error in
+            guard let status = (response as? HTTPURLResponse)?.statusCode,
+                  let statusCode = StatusCode(rawValue: status) else
+            {
+                completion(.failure( .regular(nil, nil) ))
+                return
+            }
+            
             guard error == nil else {
-                completion(.failure(  NetworkingError.regular(error!) ))
+                completion(.failure( .regular(error!, statusCode) ))
                 return
             }
             do {
                 completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
             } catch let error {
-                completion(.failure( NetworkingError.regular(error) ))
+                completion(.failure( .regular(error, statusCode) ))
             }
         }
         task.resume()
