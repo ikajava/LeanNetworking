@@ -28,7 +28,7 @@ public extension Endpoint {
                             .regular(nil, statusCode)
                         )
                     )
-                    Logger.trace(level: .error, params: ["Status code: \(statusCode.rawValue)"])
+                    Logger.trace(level: .error, params: ["\(statusCode.description()): \(statusCode.rawValue)"])
                     return
                 }
                 
