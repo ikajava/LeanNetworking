@@ -34,6 +34,7 @@ public enum StatusCode: Int {
     case noContent = 204
     case resetContent = 205
     case partialContent = 206
+    case logicException = 209
     case multiplechoices = 300
     case movedPermanently = 301
     case found = 302
@@ -87,6 +88,7 @@ public enum StatusCode: Int {
             case .noContent: return "No Content"
             case .resetContent: return "Reset Content"
             case .partialContent: return "Partial Content"
+            case .logicException: return "Logic Exception"
             case .multiplechoices: return "Multiple Choices"
             case .movedPermanently: return "Moved Permanently"
             case .found: return "Found"

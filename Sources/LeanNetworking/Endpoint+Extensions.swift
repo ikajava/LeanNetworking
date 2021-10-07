@@ -21,14 +21,14 @@ public extension Endpoint {
                     return
                 }
                 
-                
-                guard statusCode == .OK else {
+                if statusCode == .notFound {
                     promise(
                         .failure(
                             .regular(nil, statusCode)
                         )
                     )
                     Logger.trace(level: .error, params: ["\(statusCode.description()): \(statusCode.rawValue)"])
+                    
                     return
                 }
                 
