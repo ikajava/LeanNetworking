@@ -13,27 +13,18 @@ public extension Endpoint {
                 delegate: self.delegate,
                 delegateQueue: nil
             ).dataTask(with: self.request) { data, response, error in
-                guard let status = (response as? HTTPURLResponse)?.statusCode,
-                      let statusCode = StatusCode(rawValue: status) else
-                {
-                    promise(.failure(.regular(nil, nil)))
-                    Logger.trace(level: .error, params: ["No status code"])
+                
+                guard error == nil else {
+                    promise(.failure( NetworkingError.regular(error!) ))
+                    Logger.trace(level: .error, params: [String(describing: error)])
                     return
                 }
                 
-                if statusCode == .notFound {
-                    promise(
-                        .failure(
-                            .regular(nil, statusCode)
-                        )
-                    )
-                    Logger.trace(level: .error, params: ["\(statusCode.description()): \(statusCode.rawValue)"])
+                do {
+                    Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!.valid)
+                    promise(.success(try self.decoder.decode(Response.self, from: data!.valid)))
+                } catch let error {
                     
-                    return
-                }
-                
-                
-                if statusCode == .logicException {
                     do {
                         // try to decode response in status error
                         let networkError = try self.decoder.decode(NetworkingError.self, from: data!.valid)
@@ -43,22 +34,10 @@ public extension Endpoint {
                         
                         return
                     } catch {
-                        promise(.failure( NetworkingError.regular(error, statusCode) ))
-                        Logger.traceDecodingError(error: error)
+                        // DO NOTHING
                     }
-                }
-                
-                guard error == nil else {
-                    promise(.failure( NetworkingError.regular(error, statusCode) ))
-                    Logger.trace(level: .error, params: [String(describing: error)])
-                    return
-                }
-                
-                do {
-                    Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!.valid)
-                    promise(.success(try self.decoder.decode(Response.self, from: data!.valid)))
-                } catch let error {
-                    promise(.failure( NetworkingError.regular(error, statusCode) ))
+                    
+                    promise(.failure( NetworkingError.regular(error) ))
                     Logger.traceDecodingError(error: error)
                 }
             }
@@ -66,30 +45,38 @@ public extension Endpoint {
         }
     }
     
+    @available(*, renamed: "call()")
     func call(completion: @escaping (Result<Response, NetworkingError>) -> Void) {
-        let task = URLSession(
-            configuration: .ephemeral,
-            delegate: self.delegate,
-            delegateQueue: nil
-        ).dataTask(with: request) { data, response, error in
-            guard let status = (response as? HTTPURLResponse)?.statusCode,
-                  let statusCode = StatusCode(rawValue: status) else
-            {
-                completion(.failure( .regular(nil, nil) ))
-                return
-            }
-            
-            guard error == nil else {
-                completion(.failure( .regular(error!, statusCode) ))
-                return
-            }
+        Task {
             do {
-                completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
-            } catch let error {
-                completion(.failure( .regular(error, statusCode) ))
+                let result = try await call()
+                completion(.success(result))
+            } catch {
+                completion(.failure(error as! NetworkingError))
             }
         }
-        task.resume()
+    }
+    
+    
+    func call() async throws -> Response {
+        return try await withCheckedThrowingContinuation { continuation in
+            let task = URLSession(
+                configuration: .ephemeral,
+                delegate: self.delegate,
+                delegateQueue: nil
+            ).dataTask(with: request) { data, response, error in
+                guard error == nil else {
+                    continuation.resume(with: .failure(  NetworkingError.regular(error!) ))
+                    return
+                }
+                do {
+                    continuation.resume(with: .success(try self.decoder.decode(Response.self, from: data!.valid)))
+                } catch let error {
+                    continuation.resume(with: .failure( NetworkingError.regular(error) ))
+                }
+            }
+            task.resume()
+        }
     }
 }
 
