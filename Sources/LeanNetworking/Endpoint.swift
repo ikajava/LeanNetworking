@@ -160,7 +160,6 @@ public final class Endpoint<Response: Decodable> {
             request.addValue($0.value, forHTTPHeaderField: $0.key)
         }
         request.httpBody = httpBody
-        
         return self
     }
 }
