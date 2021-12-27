@@ -122,7 +122,7 @@ public final class Endpoint<Response: Decodable> {
     /// - Parameter loggingOptions: Option Set what exactly should be logged, default value is .all
     /// - Returns: Endpoint
     @discardableResult
-    public func print(_ loggingOptions: LoggingOptions = .all) -> Endpoint {
+    public func log(_ loggingOptions: LoggingOptions = .all) -> Endpoint {
         self.loggingOptions = loggingOptions
         return self
     }
