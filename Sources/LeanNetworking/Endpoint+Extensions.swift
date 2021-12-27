@@ -24,74 +24,61 @@ public extension Endpoint {
     private func sessionCompletionHandler(
         completion: @escaping (Result<Response, NetworkingError>) -> Void
     ) -> (Data?, URLResponse?, Error?) -> Void {
-        return { (data, response, error) in
-            guard error == nil else {
-                completion(.failure(NetworkingError.regular(error!, nil)))
-                Logger.trace(level: .error, params: [String(describing: error)])
-                return
-            }
-            do {
-                Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data!.valid)
-                completion(.success(try self.decoder.decode(Response.self, from: data!.valid)))
-            } catch let error {
-                
-                do {
-                    // try to decode response in status error
-                    let networkError = try self.decoder.decode(NetworkingError.self, from: data!.valid)
-                    if case .status = networkError {
-                        completion(.failure(networkError))
-                    }
-                    return
-                } catch {
-                    // DO NOTHING
-                }
-                completion(.failure( NetworkingError.regular(error, nil) ))
-                Logger.traceDecodingError(error: error)
-            }
+        return {(data, response, error) in
             
+            guard let response = response as? HTTPURLResponse else { return }
+            Logger.log(loggingOptions: self.loggingOptions, level: .info, request: self.request)
+            
+            let result = self.verify(data: data, urlResponse: response, error: error)
+            
+            switch result {
+            case .success(let data):
+                Logger.log(loggingOptions: self.loggingOptions, level: .info, response: response, data: data.valid)
+                self.decodeData(data: data, completion: completion)
+            case .failure(let error):
+                completion(.failure(error))
+                Logger.trace(level: .error, params: [error])
+            }
         }
     }
     
-    private func verify(data: Any?, urlResponse: HTTPURLResponse, error: Error?) -> Result<Any, NetworkingError> {
-        let status = StatusCode(rawValue: urlResponse.statusCode)
+    private func verify(data: Data?, urlResponse: HTTPURLResponse, error: Error?) -> Result<Data, NetworkingError> {
+        guard let status = StatusCode(rawValue: urlResponse.statusCode) else {
+            return .failure(NetworkingError.regular(error, nil))
+        }
         
         switch status {
-        case .some(.unauthorized),
-             .some(.logicException):
+        case .logicException: // FOR 209
                 return .failure(NetworkingError.regular(error, status))
         default:
-            switch status?.category() {
+            switch status.category() {
             case .successful:
                 guard let data = data else {
-                    return .failure(NetworkingError.regular(error, .noContent))
+                    let error = NetworkingError.regular(error, .noContent)
+                    return .failure(error)
                 }
                 return .success(data)
             default:
+                
                 return .failure(NetworkingError.regular(error, status))
             }
         }
     }
     
-//    func call() async throws -> Response {
-//        return try await withCheckedThrowingContinuation { continuation in
-//            let task = URLSession(
-//                configuration: .ephemeral,
-//                delegate: self.delegate,
-//                delegateQueue: nil
-//            ).dataTask(with: request) { data, response, error in
-//                guard error == nil else {
-//                    continuation.resume(with: .failure(  NetworkingError.regular(error!) ))
-//                    return
-//                }
-//                do {
-//                    continuation.resume(with: .success(try self.decoder.decode(Response.self, from: data!.valid)))
-//                } catch let error {
-//                    continuation.resume(with: .failure( NetworkingError.regular(error) ))
-//                }
-//            }
-//            task.resume()
-//        }
-//    }
+    private func decodeData(data: Data, completion: @escaping (Result<Response, NetworkingError>) -> Void) {
+        do {
+            let response = try decoder.decode(Response.self, from: data)
+            completion(.success(response))
+        } catch let error {
+            do {
+                let networkError = try self.decoder.decode(NetworkingError.self, from: data.valid)
+                completion(.failure(networkError))
+            } catch _ {
+                // Do nothing
+            }
+            completion(.failure( NetworkingError.regular(error, nil) ))
+        }
+    }
 }
 
 private extension Data {
